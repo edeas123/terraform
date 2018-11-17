@@ -2,3 +2,5 @@
 *.backup
 .DS_Store
 .terraform
+.idea
+.tfbackup
