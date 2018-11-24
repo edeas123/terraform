@@ -1,10 +1,4 @@
 
-# configure the default cloud provider
-provider "aws" {
-  	version 	= "1.42.0"
-  	region		= "us-east-1"
-}
-
 # create an ssh key call it deployer
 # this is the key you will use as the base for deploying your
 # infrastructure
