@@ -1,8 +1,8 @@
-#!/bin/bash -ex
- 
-# create symlink for the base terraform configuration files
+#!/bin/bash -e
+
 # run this from the desired directory
-ln ../base/* .
+# create symlink for the base terraform configuration files
+ln ../../common/* .
 
 # initialize terraform
-terraform init
+terraform init .

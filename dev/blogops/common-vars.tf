@@ -3,6 +3,7 @@ variable "region" {
 }
 
 # TODO: confirm the need for the double quotes in the map
+# TODO: fix this amis thing, use it properly if at all
 variable "amis" {
 	type = "map"
 	default = {

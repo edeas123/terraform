@@ -20,7 +20,7 @@ resource "aws_instance" "web-server-1" {
 }
 
 # create another ec2 instance with an ebs volume
-# use the deployer key
+# using the deployer key
 resource "aws_instance" "web-server-2" {
 	ami           = "ami-0ff8a91507f77f867"
 	instance_type = "t2.micro"
@@ -35,6 +35,20 @@ resource "aws_instance" "web-server-2" {
 	depends_on = [
 		"aws_s3_bucket.a-static-website-bucket"
 	]
+}
+
+
+# create a policy document for the role
+# instead of using a policy document, it can used directly in
+# the role using terraform heredoc syntax
+data "aws_iam_policy_document" "s3access-role-policy" {
+	statement {
+		actions = ["sts:AssumeRole"]
+		principals {
+			type 		= "Service"
+			identifiers = ["ec2.amazonaws.com"]
+		}
+	}
 }
 
 # set an aws iam role with accompanying policy for ec2 

@@ -1,5 +1,5 @@
 
-# create and iam user
+# create an iam user for circleci
 resource "aws_iam_user" "circleci" {
 	name = "circleci"
 }
