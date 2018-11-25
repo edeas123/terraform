@@ -13,3 +13,9 @@ resource "aws_s3_bucket" "mybytesni" {
 	force_destroy = true
 	acl = "private"
 }
+
+# create an s3 bucket for storing terraform state
+resource "aws_s3_bucket" "mybytesni-terraform" {
+	bucket = "mybytesni-terraform"
+	force_destroy = true
+}
