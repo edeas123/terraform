@@ -2,7 +2,7 @@
 
 # run this from the desired directory
 # create symlink for the base terraform configuration files
-ln ../../common/* .
+ln -f ../../common/* .
 
 # initialize terraform
 terraform init .
