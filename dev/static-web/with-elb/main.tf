@@ -1,22 +1,18 @@
 # create the ec2 instance with an ebs volume
-# use the deployer key
-# NOTE: Changing user_data forces a new instance, hence not recommended for configuration
-# management that may change
-# use ansible, or other CM tools
+# https://www.terraform.io/docs/providers/aws/r/instance.html
 resource "aws_instance" "web-server-1" {
 	ami           = "ami-0ff8a91507f77f867"
 	instance_type = "t2.micro"
 	key_name 	  = "deployer"
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
 	availability_zone = "us-east-1a"
-
+	vpc_security_group_ids = [
+		"${aws_security_group.web-sg.id}"
+	]
 	tags = {
 		Name = "web-server-1" 
 	}
 	user_data = "${file("make-web-server.sh")}"
-	depends_on = [
-		"aws_s3_bucket.a-static-website-bucket"
-	]
 }
 
 # create another ec2 instance with an ebs volume
@@ -27,14 +23,45 @@ resource "aws_instance" "web-server-2" {
 	key_name 	  = "deployer"
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
 	availability_zone = "us-east-1b"
-
+	vpc_security_group_ids = [
+		"${aws_security_group.web-sg.id}"
+	]
 	tags = {
 		Name = "web-server-2" 
 	}
 	user_data = "${file("make-web-server.sh")}"
-	depends_on = [
-		"aws_s3_bucket.a-static-website-bucket"
-	]
+}
+
+# create a security group for the web servers
+# https://www.terraform.io/docs/providers/aws/r/security_group.html
+resource "aws_security_group" "web-sg" {
+	name = "web-sg"
+	description = "Security group for the web servers"
+	vpc_id = "${var.vpc_id}"
+
+	ingress {
+		from_port = 22
+		to_port = 22
+		protocol = "tcp"
+		cidr_blocks = ["0.0.0.0/0"]
+		description = "Allow all inbound SSH connections"
+	}
+
+	ingress {
+		from_port = 80
+		to_port = 80
+		protocol = "tcp"
+		cidr_blocks = ["0.0.0.0/0"]
+		description = "Allow HTTP connections on port 80"
+	}
+
+	 egress {
+		from_port = 0
+		to_port = 0
+		protocol = "-1"
+		cidr_blocks = ["0.0.0.0/0"]
+		description = "Allows all outbound traffic from the instance"
+	 }
 }
 
 
@@ -74,6 +101,7 @@ resource "aws_iam_instance_profile" "s3access-role" {
 }
 
 # create an application load balancer
+# https://www.terraform.io/docs/providers/aws/r/lb.html
 resource "aws_alb" "web-server-alb" {
 	name = "web-server-alb"
 	internal = false
@@ -81,9 +109,13 @@ resource "aws_alb" "web-server-alb" {
 	ip_address_type  = "ipv4"
 
 	subnets = ["${data.aws_subnet_ids.vpc_subnets.ids}"]
+	security_groups = [
+		"${aws_security_group.web-sg.id}"
+	]
 }
 
 # create an application load balancer listener 
+# https://www.terraform.io/docs/providers/aws/r/lb_listener.html
 resource "aws_alb_listener" "web-server-alb-listener" {
 	load_balancer_arn = "${aws_alb.web-server-alb.arn}"
 	port = 80
@@ -96,6 +128,7 @@ resource "aws_alb_listener" "web-server-alb-listener" {
 }
 
 # create the application load balancer target group
+# https://www.terraform.io/docs/providers/aws/r/lb_target_group.html
 resource "aws_alb_target_group" "web-server-target-group" {
 	name = "web-server-target-group"
 	port = 80
@@ -104,6 +137,7 @@ resource "aws_alb_target_group" "web-server-target-group" {
 }
 
 # attach the two webserver instances to the target group
+# https://www.terraform.io/docs/providers/aws/r/lb_target_group_attachment.html
 resource "aws_alb_target_group_attachment" "web-server-1-target-group-instance" {
   target_group_arn = "${aws_alb_target_group.web-server-target-group.arn}"
   target_id        = "${aws_instance.web-server-1.id}"
@@ -113,4 +147,12 @@ resource "aws_alb_target_group_attachment" "web-server-2-target-group-instance" 
   target_group_arn = "${aws_alb_target_group.web-server-target-group.arn}"
   target_id        = "${aws_instance.web-server-2.id}"
   port             = 80
+}
+
+# output the instances ip addresses
+output "webserver-1-ip" {
+  value = "${aws_instance.web-server-1.public_ip}"
+}
+output "webserver-2-ip" {
+  value = "${aws_instance.web-server-2.public_ip}"
 }
