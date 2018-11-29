@@ -17,16 +17,18 @@ resource "aws_instance" "jenkins-server-1" {
 }
 
 # create a security group for the jenkins server
+# https://www.terraform.io/docs/providers/aws/r/security_group.html
 resource "aws_security_group" "jenkins-sg" {
 	name = "jenkins-sg"
 	description = "Security group for the jenkins servers"
-	vpc_id = "${var.vpc_id}" 
+	vpc_id = "${var.vpc_id}"
 
 	ingress {
 		from_port = 22
 		to_port = 22
 		protocol = "tcp"
 		cidr_blocks = ["0.0.0.0/0"]
+		description = "Allow all inbound SSH connections"
 	}
 
 	ingress {
@@ -34,14 +36,16 @@ resource "aws_security_group" "jenkins-sg" {
 		to_port = 8080
 		protocol = "tcp"
 		cidr_blocks = ["0.0.0.0/0"]
+		description = "Allow HTTP connections on port 8080 used for the Jenkins UI"
 	}
 
- egress {
+	egress {
 		from_port = 0
 		to_port = 0
 		protocol = "-1"
 		cidr_blocks = ["0.0.0.0/0"]
- }
+		description = "Allows all outbound traffic from the instance"
+	}
 }
 
 # output the instance public ip address
