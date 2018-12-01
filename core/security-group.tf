@@ -82,3 +82,14 @@ resource "aws_security_group" "jenkins-sg" {
 	}
 }
 
+output "jenkins-sg-id" {
+  value = "${aws_security_group.jenkins-sg.id}"
+}
+
+output "web-sg-id" {
+  value = "${aws_security_group.web-sg.id}"
+}
+
+output "playground-sg-id" {
+  value = "${aws_security_group.playground-sg.id}"
+}
