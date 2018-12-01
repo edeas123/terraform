@@ -7,7 +7,7 @@ resource "aws_instance" "web-server-1" {
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
 	availability_zone = "us-east-1a"
 	vpc_security_group_ids = [
-		"${aws_security_group.web-sg.id}"
+		"${data.terraform_remote_state.core.web-sg-id}"
 	]
 	tags = {
 		Name = "web-server-1" 
@@ -24,46 +24,13 @@ resource "aws_instance" "web-server-2" {
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
 	availability_zone = "us-east-1b"
 	vpc_security_group_ids = [
-		"${aws_security_group.web-sg.id}"
+		"${data.terraform_remote_state.core.web-sg-id}"
 	]
 	tags = {
 		Name = "web-server-2" 
 	}
 	user_data = "${file("make-web-server.sh")}"
 }
-
-# create a security group for the web servers
-# https://www.terraform.io/docs/providers/aws/r/security_group.html
-resource "aws_security_group" "web-sg" {
-	name = "web-sg"
-	description = "Security group for the web servers"
-	vpc_id = "${var.vpc_id}"
-
-	ingress {
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allow all inbound SSH connections"
-	}
-
-	ingress {
-		from_port = 80
-		to_port = 80
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allow HTTP connections on port 80"
-	}
-
-	 egress {
-		from_port = 0
-		to_port = 0
-		protocol = "-1"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allows all outbound traffic from the instance"
-	 }
-}
-
 
 # create a policy document for the role
 # instead of using a policy document, it can used directly in
@@ -110,7 +77,7 @@ resource "aws_alb" "web-server-alb" {
 
 	subnets = ["${data.aws_subnet_ids.vpc_subnets.ids}"]
 	security_groups = [
-		"${aws_security_group.web-sg.id}"
+		"${data.terraform_remote_state.core.web-sg-id}"
 	]
 }
 
