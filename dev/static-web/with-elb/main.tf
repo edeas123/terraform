@@ -1,11 +1,11 @@
 # create the ec2 instance with an ebs volume
 # https://www.terraform.io/docs/providers/aws/r/instance.html
 resource "aws_instance" "web-server-1" {
-	ami           = "ami-0ff8a91507f77f867"
+	ami	= "ami-0653e888ec96eab9b"
 	instance_type = "t2.micro"
 	key_name 	  = "deployer"
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
-	availability_zone = "us-east-1a"
+	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.web-sg-id}"
 	]
@@ -18,11 +18,11 @@ resource "aws_instance" "web-server-1" {
 # create another ec2 instance with an ebs volume
 # using the deployer key
 resource "aws_instance" "web-server-2" {
-	ami           = "ami-0ff8a91507f77f867"
+	ami	= "ami-0653e888ec96eab9b"
 	instance_type = "t2.micro"
 	key_name 	  = "deployer"
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
-	availability_zone = "us-east-1b"
+	availability_zone = "${data.aws_availability_zones.zones.names[1]}"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.web-sg-id}"
 	]
@@ -100,7 +100,7 @@ resource "aws_alb_target_group" "web-server-target-group" {
 	name = "web-server-target-group"
 	port = 80
 	protocol = "HTTP"
-	vpc_id = "vpc-6f3d7608"
+	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 }
 
 # attach the two webserver instances to the target group

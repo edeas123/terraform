@@ -1,21 +1,9 @@
-# resource "aws_instance" "playground-1" {
-# 	ami           = "ami-0f9cf087c1f27d9b1"
-# 	instance_type = "t2.micro"
-# 	key_name 	  = "deployer"
-# 	availability_zone = "us-east-1a"
-# 	vpc_security_group_ids = [
-# 		"${data.terraform_remote_state.core.playground-sg-id}"
-# 	]
-#     tags = {
-#         Name = "playground-1"
-#     }
-# }
-
 resource "aws_spot_instance_request" "playground-spot-1" {
-	ami	= "ami-0f9cf087c1f27d9b1"
-	instance_type = "m3.large"
+	ami	= "ami-0653e888ec96eab9b"
+	instance_type = "t2.micro"
+	spot_type = "one-time"
 	key_name = "deployer"
-	availability_zone = "us-east-1a"
+	availability_zone = "${data.aws_availability_zones.zones.names[2]}"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.playground-sg-id}"
 	]

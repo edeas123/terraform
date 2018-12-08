@@ -3,10 +3,10 @@
 # TODO: output this value /var/lib/jenkins/secrets/initialAdminPassword
 # provision the ec2 instance
 resource "aws_instance" "jenkins-server-1" {
-	ami           = "ami-0ff8a91507f77f867"
+	ami	= "ami-0cd3dfa4e37921605"
 	instance_type = "t2.micro"
 	key_name 	  = "deployer"
-	availability_zone = "us-east-1a"
+	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.jenkins-sg-id}"
 	]

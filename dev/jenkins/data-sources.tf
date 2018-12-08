@@ -1,13 +1,7 @@
-# TODO: use todo to get the vpc id
-# list of the ids of all subnets in the vpc
-data "aws_subnet_ids" "vpc_subnets" {
-  vpc_id = "${var.vpc_id}"
-}
-
 data "terraform_remote_state" "jenkins" {
   backend = "s3"
   config {
-    bucket = "mybytesni-terraform"
+    bucket = "mybytesni-tfstate"
     key    = "jenkins.tfstate"
     region = "${var.region}"
   }
@@ -16,7 +10,7 @@ data "terraform_remote_state" "jenkins" {
 data "terraform_remote_state" "static-web-with-elb" {
   backend = "s3"
   config {
-    bucket = "mybytesni-terraform"
+    bucket = "mybytesni-tfstate"
     key    = "static-web-with-elb.tfstate"
     region = "${var.region}"
   }
@@ -25,7 +19,7 @@ data "terraform_remote_state" "static-web-with-elb" {
 data "terraform_remote_state" "static-web-on-s3" {
   backend = "s3"
   config {
-    bucket = "mybytesni-terraform"
+    bucket = "mybytesni-tfstate"
     key    = "static-web-on-s3.tfstate"
     region = "${var.region}"
   }
@@ -34,7 +28,7 @@ data "terraform_remote_state" "static-web-on-s3" {
 data "terraform_remote_state" "blogops" {
   backend = "s3"
   config {
-    bucket = "mybytesni-terraform"
+    bucket = "mybytesni-tfstate"
     key    = "blogops.tfstate"
     region = "${var.region}"
   }
@@ -43,7 +37,7 @@ data "terraform_remote_state" "blogops" {
 data "terraform_remote_state" "core" {
   backend = "s3"
   config {
-    bucket = "mybytesni-terraform"
+    bucket = "mybytesni-tfstate"
     key    = "core.tfstate"
     region = "${var.region}"
   }
@@ -52,8 +46,10 @@ data "terraform_remote_state" "core" {
 data "terraform_remote_state" "playground" {
   backend = "s3"
   config {
-    bucket = "mybytesni-terraform"
+    bucket = "mybytesni-tfstate"
     key    = "playground.tfstate"
     region = "${var.region}"
   }
 }
+
+data "aws_availability_zones" "zones" {}

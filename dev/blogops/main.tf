@@ -28,11 +28,11 @@ EOF
 # TODO: two spot instances, 1 ASG with 1 additional instance, 1lb
 # TODO: Use fleet instead
 resource "aws_spot_instance_request" "blogextractor-spot-1" {
-	ami	= "ami-0f9cf087c1f27d9b1"
-	instance_type = "t2.micro"
+	ami	= "ami-0653e888ec96eab9b"
+	instance_type = "m5.large"
 	spot_type = "one-time"
 	key_name = "deployer"
-	availability_zone = "us-east-1a"
+	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.blogextractor-sg-id}"
 	]
@@ -46,11 +46,11 @@ resource "aws_spot_instance_request" "blogextractor-spot-1" {
 }
 
 resource "aws_spot_instance_request" "blogextractor-spot-2" {
-	ami	= "ami-0f9cf087c1f27d9b1"
-	instance_type = "t2.micro"
+	ami	= "ami-0653e888ec96eab9b"
+	instance_type = "m5.large"
 	spot_type = "one-time"
 	key_name = "deployer"
-	availability_zone = "us-east-1a"
+	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.blogextractor-sg-id}"
 	]
@@ -93,7 +93,7 @@ resource "aws_alb_target_group" "blogextractor-target-group" {
 	name = "blogextractor-target-group"
 	port = 5000
 	protocol = "HTTP"
-	vpc_id = "vpc-6f3d7608"
+	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 }
 
 # attach the two webserver instances to the target group

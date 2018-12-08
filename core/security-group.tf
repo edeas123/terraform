@@ -2,7 +2,7 @@
 resource "aws_security_group" "web-sg" {
 	name = "web-sg"
 	description = "Security group for the web servers"
-	vpc_id = "${var.vpc_id}"
+  	vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 22
@@ -36,7 +36,7 @@ resource "aws_security_group" "web-sg" {
 resource "aws_security_group" "blogextractor-sg" {
 	name = "blogextractor-sg"
 	description = "Security group for the blogextractor instances"
-	vpc_id = "${var.vpc_id}"
+  	vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 22
@@ -70,7 +70,7 @@ resource "aws_security_group" "blogextractor-sg" {
 resource "aws_security_group" "playground-sg" {
 	name = "playground-sg"
 	description = "Security group for the playground instances"
-	vpc_id = "${var.vpc_id}"
+  	vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 22
@@ -97,7 +97,7 @@ resource "aws_security_group" "playground-sg" {
 resource "aws_security_group" "jenkins-sg" {
 	name = "jenkins-sg"
 	description = "Security group for the jenkins servers"
-	vpc_id = "${var.vpc_id}"
+  	vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 22
