@@ -53,3 +53,7 @@ data "terraform_remote_state" "playground" {
 }
 
 data "aws_availability_zones" "zones" {}
+
+data "aws_route53_zone" "primary-domain" {
+  name = "${var.domain}"
+}
