@@ -38,3 +38,16 @@ resource "aws_s3_bucket_object" "error-file" {
 	source = "data/error.html"
 	content_type = "text/html"
 }
+
+# created alias record set for website
+resource "aws_route53_record" "domain-website" {
+  zone_id = "${data.aws_route53_zone.primary-domain.id}"
+  name = "${var.domain}"
+  type = "A"
+
+  alias {
+	  name = "${aws_s3_bucket.domain-bucket.website_domain}"
+	  zone_id = "${aws_s3_bucket.domain-bucket.hosted_zone_id}"
+	  evaluate_target_health = false
+  }
+}
