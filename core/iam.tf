@@ -13,5 +13,5 @@ resource "aws_iam_access_key" "circleci-access-key" {
 # attach a managed policy to the created role, for full access to ecr
 resource "aws_iam_user_policy_attachment" "circleci-ecr-policy-attachment" {
   user       = "${aws_iam_user.circleci.name}"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryPowerUser"
 }
