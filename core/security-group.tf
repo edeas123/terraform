@@ -33,40 +33,6 @@ resource "aws_security_group" "web-sg" {
     }
 }
 
-resource "aws_security_group" "blogextractor-sg" {
-	name = "blogextractor-sg"
-	description = "Security group for the blogextractor instances"
-  	vpc_id = "${aws_default_vpc.default.id}"
-
-	ingress {
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allow all inbound SSH connections"
-	}
-
-	ingress {
-		from_port = 5000
-		to_port = 5000
-		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allow HTTP connections on port 5000 used for the UI"
-	}
-
-	egress {
-		from_port = 0
-		to_port = 0
-		protocol = "-1"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allows all outbound traffic from the instance"
-	}
-
-    tags {
-        Name = "blogextractor"
-    }
-}
-
 resource "aws_security_group" "playground-sg" {
 	name = "playground-sg"
 	description = "Security group for the playground instances"
@@ -138,8 +104,4 @@ output "web-sg-id" {
 
 output "playground-sg-id" {
   value = "${aws_security_group.playground-sg.id}"
-}
-
-output "blogextractor-sg-id" {
-  value = "${aws_security_group.blogextractor-sg.id}"
 }
