@@ -4,7 +4,7 @@ resource "aws_instance" "blogextractor-1" {
 	key_name = "deployer"
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
-		"${data.terraform_remote_state.core.blogextractor-sg-id}"
+		"${aws_security_group.blogextractor-sg.id}"
 	]
 	tags {
 		Name = "blogextractor-1"
@@ -17,7 +17,7 @@ resource "aws_instance" "blogextractor-2" {
 	key_name = "deployer"
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
-		"${data.terraform_remote_state.core.blogextractor-sg-id}"
+		"${aws_security_group.blogextractor-sg.id}"
 	]
 	tags {
 		Name = "blogextractor-2"
