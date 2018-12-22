@@ -2,6 +2,10 @@ resource "aws_ecr_repository" "blogextractor" {
 	name = "blogextractor"
 }
 
+resource "aws_ecr_repository" "blogbase" {
+	name = "blogbase"
+}
+
 resource "aws_ecr_lifecycle_policy" "blogextractor_lifecyle_policy" {
 	repository = "${aws_ecr_repository.blogextractor.name}"
 	policy = <<EOF
