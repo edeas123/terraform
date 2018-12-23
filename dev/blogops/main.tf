@@ -12,10 +12,6 @@ resource "aws_route53_record" "blogextractor-alias-record" {
   }
 }
 
-output "blogextractor-1-ip" {
-	value = "${aws_instance.blogextractor-1.public_ip}"
-}
-
-output "blogextractor-2-ip" {
-	value = "${aws_instance.blogextractor-2.public_ip}"
+output "blogextractor-ips" {
+	value = "${aws_instance.blogextractor.*.public_ip}"
 }

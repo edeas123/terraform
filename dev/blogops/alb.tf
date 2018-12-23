@@ -31,14 +31,10 @@ resource "aws_alb_target_group" "blogextractor-target-group" {
 	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 }
 
-# attach the two webserver instances to the target group
-resource "aws_alb_target_group_attachment" "blogextractor-1-target-group-instance" {
+# attach the two blogextractor server instances to the target group
+resource "aws_alb_target_group_attachment" "blogextractor-target-group-instances" {
   target_group_arn = "${aws_alb_target_group.blogextractor-target-group.arn}"
-  target_id        = "${aws_instance.blogextractor-1.id}"
+  target_id        = "${aws_instance.blogextractor.*.id[count.index]}"
   port             = 80
-}
-resource "aws_alb_target_group_attachment" "blogextractor-2-target-group-instance" {
-  target_group_arn = "${aws_alb_target_group.blogextractor-target-group.arn}"
-  target_id        = "${aws_instance.blogextractor-2.id}"
-  port             = 80
+	count            = 2
 }
