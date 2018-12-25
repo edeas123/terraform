@@ -25,7 +25,7 @@ resource "aws_security_group" "rancher-ctl-host-sg" {
 		from_port = 8080
 		to_port = 8080
 		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
+		security_groups = ["${aws_security_group.rancher-ctl-host-alb-sg.id}"]
 		description = "Allow HTTP connections on port 8080 used for the UI"
 	}
 
@@ -69,7 +69,7 @@ resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 		from_port = 80
 		to_port = 80
 		protocol = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    cidr_blocks = "${local.cidrs}"
 		description = "Allow HTTP connections on port 80 used for the UI"
 	}
 
@@ -82,6 +82,6 @@ resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 	}
 
   tags {
-      Name = "rancher-ctl-rds"
+      Name = "rancher-ctl-host-alb"
   }
 }
