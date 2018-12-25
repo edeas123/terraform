@@ -17,7 +17,7 @@ resource "aws_security_group" "rancher-ctl-host-sg" {
 		from_port = 9345
 		to_port = 9345
 		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
+		self = true
 		description = "Allow communication between hosts on HA"
 	}
 
