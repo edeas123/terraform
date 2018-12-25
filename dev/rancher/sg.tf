@@ -9,7 +9,7 @@ resource "aws_security_group" "rancher-ctl-host-sg" {
 		from_port = 22
 		to_port = 22
 		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
+		cidr_blocks = "${local.cidrs}"
 		description = "Allow all inbound SSH connections"
 	}
 
