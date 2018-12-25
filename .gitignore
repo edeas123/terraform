@@ -6,4 +6,5 @@
 .tfbackup
 *.tfstate
 todos.txt
+*.secrets.tf
 secrets.tf
