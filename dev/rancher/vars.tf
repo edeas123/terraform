@@ -5,3 +5,9 @@ variable "region" {
 variable "domain" {
 	default = "mybytesni.com"
 }
+
+locals {
+	cidrs = [
+		"${var.home-mac-cidr}"
+	]
+}
