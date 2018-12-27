@@ -94,6 +94,25 @@ resource "aws_security_group" "jenkins-sg" {
     }
 }
 
+resource "aws_security_group" "ssh-sg" {
+	name = "ssh-sg"
+	description = "Security group allowing ssh access from trusted cidrs"
+  	vpc_id = "${aws_default_vpc.default.id}"
+
+	ingress {
+		from_port = 22
+		to_port = 22
+		protocol = "tcp"
+		cidr_blocks = "${local.cidrs}"
+		description = "Allow SSH connections from trusted cidrs"
+
+	}
+    
+    tags {
+        Name = "ssh"
+    }
+}
+
 output "jenkins-sg-id" {
   value = "${aws_security_group.jenkins-sg.id}"
 }
@@ -104,4 +123,8 @@ output "web-sg-id" {
 
 output "playground-sg-id" {
   value = "${aws_security_group.playground-sg.id}"
+}
+
+output "ssh-sg-id" {
+  value = "${aws_security_group.ssh-sg.id}"
 }
