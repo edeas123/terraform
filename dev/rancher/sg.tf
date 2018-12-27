@@ -6,14 +6,6 @@ resource "aws_security_group" "rancher-ctl-host-sg" {
   	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 
 	ingress {
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		cidr_blocks = "${local.cidrs}"
-		description = "Allow all inbound SSH connections"
-	}
-
-	ingress {
 		from_port = 9345
 		to_port = 9345
 		protocol = "tcp"
@@ -73,6 +65,17 @@ resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 		description = "Allow HTTP connections on port 80 used for the UI"
 	}
 
+	ingress {
+		from_port = 80
+		to_port = 80
+		protocol = "tcp"
+    cidr_blocks = [
+      "${aws_instance.rancher-container-host.*.public_ip[0]}/32", 
+      "${aws_instance.rancher-container-host.*.public_ip[1]}/32"
+    ]
+		description = "Allow HTTP connections on port 80 from container hosts"
+	}
+
 	egress {
 		from_port = 0
 		to_port = 0
@@ -83,5 +86,39 @@ resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 
   tags {
       Name = "rancher-ctl-host-alb"
+  }
+}
+
+resource "aws_security_group" "rancher-container-host-sg" {
+	name = "rancher-container-host-sg"
+	description = "Security group for the rancher container host"
+  	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+
+	ingress {
+		from_port = 500
+		to_port = 500
+		protocol = "udp"
+		self = true
+		description = "Allow communication between container hosts"
+	}
+
+	ingress {
+		from_port = 4500
+		to_port = 4500
+		protocol = "udp"
+		self = true
+		description = "Allow communication between container hosts"
+	}
+
+	egress {
+		from_port = 0
+		to_port = 0
+		protocol = "-1"
+		cidr_blocks = ["0.0.0.0/0"]
+		description = "Allows all outbound traffic from the instance"
+	}
+
+  tags {
+      Name = "rancher-container-host"
   }
 }
