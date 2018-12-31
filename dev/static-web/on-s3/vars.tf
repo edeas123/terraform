@@ -7,7 +7,7 @@ variable "domain" {
 }
 
 locals {
-	cidrs = [
+	trusted-cidrs = [
 		"${var.home-mac-cidr}"
 	]
 }

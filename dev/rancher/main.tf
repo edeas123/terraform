@@ -5,7 +5,7 @@ resource "aws_instance" "rancher-ctl-host" {
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
 		"${aws_security_group.rancher-ctl-host-sg.id}",
-		"${aws_security_group.ssh-sg.id}"
+		"${data.terraform_remote_state.core.ssh-sg-id}"
 	]
 	tags {
 		Name = "${format("rancher-ctl-host%d", count.index)}"
@@ -19,8 +19,8 @@ resource "aws_instance" "rancher-container-host" {
 	key_name = "deployer"
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
-		"${aws_security_group.rancher-container-host-sg.id}",
-		"${aws_security_group.ssh-sg.id}"
+		"${data.terraform_remote_state.core.rancher-container-host-sg-id}",
+		"${data.terraform_remote_state.core.ssh-sg-id}"
 	]
 	tags {
 		Name = "${format("rancher-container-host%d", count.index)}"

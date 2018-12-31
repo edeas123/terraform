@@ -7,6 +7,7 @@ resource "aws_instance" "web-server-1" {
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
+    "${data.terraform_remote_state.core.ssh-sg-id}",
 		"${data.terraform_remote_state.core.web-sg-id}"
 	]
 	tags = {
@@ -24,6 +25,7 @@ resource "aws_instance" "web-server-2" {
 	iam_instance_profile = "${aws_iam_instance_profile.s3access-role.name}"
 	availability_zone = "${data.aws_availability_zones.zones.names[1]}"
 	vpc_security_group_ids = [
+    "${data.terraform_remote_state.core.ssh-sg-id}",
 		"${data.terraform_remote_state.core.web-sg-id}"
 	]
 	tags = {

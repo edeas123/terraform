@@ -7,7 +7,7 @@ resource "aws_alb" "blogextractor-alb" {
 
 	subnets = ["${data.aws_subnet_ids.vpc_subnets.ids}"]
 	security_groups = [
-		"${aws_security_group.blogextractor-sg.id}"
+    "${data.terraform_remote_state.core.blogextractor-sg-id}"
 	]
 }
 

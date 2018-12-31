@@ -8,7 +8,8 @@ resource "aws_instance" "jenkins-server-1" {
 	key_name 	  = "deployer"
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
-		"${data.terraform_remote_state.core.jenkins-sg-id}"
+		"${data.terraform_remote_state.core.jenkins-sg-id}",
+    "${data.terraform_remote_state.core.ssh-sg-id}"
 	]
 	tags = {
 		Name = "jenkins-server-1" 

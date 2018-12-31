@@ -5,7 +5,8 @@ resource "aws_spot_instance_request" "playground-spot-1" {
 	key_name = "deployer"
 	availability_zone = "${data.aws_availability_zones.zones.names[2]}"
 	vpc_security_group_ids = [
-		"${data.terraform_remote_state.core.playground-sg-id}"
+		"${data.terraform_remote_state.core.playground-sg-id}",
+    "${data.terraform_remote_state.core.ssh-sg-id}"
 	]
 	wait_for_fulfillment = true
 	timeouts {
