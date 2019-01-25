@@ -7,7 +7,7 @@ resource "aws_db_instance" "rancher-ctl-rds" {
   engine               = "mysql"
   engine_version       = "5.7"
   instance_class       = "db.t2.micro"
-  vpc_security_group_ids = ["${aws_security_group.rancher-ctl-rds-sg.id}"]
+  vpc_security_group_ids = ["${data.terraform_remote_state.core.rancher-ctl-rds-sg-id}"]
   name                 = "${var.rancher-ctl-rds-database}"
   username             = "${var.rancher-ctl-rds-username}"
   password             = "${var.rancher-ctl-rds-password}"

@@ -6,7 +6,7 @@ resource "aws_alb" "rancher-ctl-host-alb" {
 
 	subnets = ["${data.aws_subnet_ids.vpc_subnets.ids}"]
 	security_groups = [
-		"${aws_security_group.rancher-ctl-host-alb-sg.id}"
+		"${data.terraform_remote_state.core.rancher-ctl-host-alb-sg-id}"
 	]
 }
 
