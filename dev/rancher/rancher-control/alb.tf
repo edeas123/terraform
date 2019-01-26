@@ -33,7 +33,7 @@ resource "aws_alb_target_group" "rancher-ctl-host-target-group" {
 # attach the three hosts to the target group
 resource "aws_alb_target_group_attachment" "rancher-ctl-host-target-group-instances" {
   target_group_arn = "${aws_alb_target_group.rancher-ctl-host-target-group.arn}"
-  target_id        = "${aws_instance.rancher-ctl-host.*.id[count.index]}"
+  target_id        = "${aws_spot_instance_request.rancher-ctl-host.*.spot_instance_id[count.index]}"
   port             = 8080
   count            = 3
 }
