@@ -12,7 +12,3 @@ locals {
     "${var.office-cidr}"
 	]
 }
-
-variable "ubuntu-ami" {
-  default = "ami-0653e888ec96eab9b"
-}
