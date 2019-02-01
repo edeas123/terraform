@@ -1,5 +1,5 @@
 resource "aws_spot_instance_request" "rancher-ctl-host" {
-	ami	= "${var.ubuntu-ami}"
+	ami	= "${data.aws_ami.ubuntu-ami.id}"
 	instance_type = "m4.large"
 	spot_type = "one-time"
 	key_name = "deployer"
