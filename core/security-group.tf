@@ -210,6 +210,24 @@ resource "aws_security_group" "rancher-ctl-rds-sg" {
   }
 }
 
+resource "aws_security_group" "playground-rds-sg" {
+	name = "playground-rds-sg"
+	description = "Security group for the playground rds database"
+  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+
+	ingress {
+		from_port = 3306
+		to_port = 3306
+		protocol = "tcp"
+    security_groups = ["${aws_security_group.playground-sg.id}"]
+		description = "Allow communication on the database port from only the playground-host"
+	}
+
+  tags {
+      Name = "playground-rds"
+  }
+}
+
 resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 	name = "rancher-ctl-host-alb-sg"
 	description = "Security group for the rancher host alb"
@@ -274,6 +292,9 @@ output "rancher-ctl-rds-sg-id" {
   value = "${aws_security_group.rancher-ctl-rds-sg.id}"
 }
 
+output "playground-rds-sg-id" {
+  value = "${aws_security_group.playground-rds-sg.id}"
+}
 output "rancher-ctl-host-alb-sg-id" {
   value = "${aws_security_group.rancher-ctl-host-alb-sg.id}"
 }
