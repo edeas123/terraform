@@ -21,3 +21,19 @@ resource "aws_route53_record" "blogextractor-cname-record" {
   records = ["${aws_instance.blogextractor.*.public_dns[count.index]}"]
   count   = 2
 }
+ 
+resource "aws_cloudwatch_metric_alarm" "blogextractor-cpu-metric" {
+  alarm_name = "${format("blogextractor-cpu-metric-%d", count.index)}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = "3"
+  metric_name = "CPUUtilization"
+  namespace = "AWS/EC2"
+  period = "300"
+  statistic = "Average"
+  threshold = "0.5"
+  alarm_description = "This metric monitors ec2 cpu utilization"
+  dimensions = {
+    InstanceId = "${aws_instance.blogextractor.*.id[count.index]}"
+  }
+  count = 2
+}
