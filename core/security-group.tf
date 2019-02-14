@@ -2,7 +2,7 @@
 resource "aws_security_group" "web-sg" {
 	name = "web-sg"
 	description = "Security group for the web servers"
-  	vpc_id = "${aws_default_vpc.default.id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 80
@@ -28,7 +28,7 @@ resource "aws_security_group" "web-sg" {
 resource "aws_security_group" "playground-sg" {
 	name = "playground-sg"
 	description = "Security group for the playground instances"
-  	vpc_id = "${aws_default_vpc.default.id}"
+  vpc_id = "${aws_vpc.mybytesni.id}"
 
 	egress {
 		from_port = 0
@@ -47,7 +47,7 @@ resource "aws_security_group" "playground-sg" {
 resource "aws_security_group" "jenkins-sg" {
 	name = "jenkins-sg"
 	description = "Security group for the jenkins servers"
-  	vpc_id = "${aws_default_vpc.default.id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 8080
@@ -73,7 +73,7 @@ resource "aws_security_group" "jenkins-sg" {
 resource "aws_security_group" "ssh-sg" {
 	name = "ssh-sg"
 	description = "Security group allowing ssh access from trusted cidrs"
-  	vpc_id = "${aws_default_vpc.default.id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 22
@@ -89,10 +89,30 @@ resource "aws_security_group" "ssh-sg" {
     }
 }
 
+resource "aws_security_group" "mybytesni-ssh-sg" {
+	name = "mybytesni-ssh-sg"
+	description = "Security group allowing ssh access from trusted cidrs"
+  vpc_id = "${aws_vpc.mybytesni.id}"
+
+	ingress {
+		from_port = 22
+		to_port = 22
+		protocol = "tcp"
+		cidr_blocks = "${local.trusted-cidrs}"
+    self = true
+		description = "Allow SSH connections from trusted cidrs"
+
+	}
+    
+    tags {
+        Name = "mybytesni ssh"
+    }
+}
+
 resource "aws_security_group" "blogextractor-sg" {
 	name = "blogextractor-sg"
 	description = "Security group for the blogextractor instances"
-  	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 
 	ingress {
 		from_port = 80
@@ -119,7 +139,7 @@ resource "aws_security_group" "blogextractor-sg" {
 resource "aws_security_group" "rancher-container-host-sg" {
 	name = "rancher-container-host-sg"
 	description = "Security group for the rancher container host"
-  	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 
 	ingress {
 		from_port = 500
@@ -161,7 +181,7 @@ resource "aws_security_group" "rancher-container-host-sg" {
 resource "aws_security_group" "rancher-ctl-host-sg" {
 	name = "rancher-ctl-host-sg"
 	description = "Security group for the rancher control host"
-  	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 
 	ingress {
 		from_port = 9345
@@ -195,7 +215,7 @@ resource "aws_security_group" "rancher-ctl-host-sg" {
 resource "aws_security_group" "rancher-ctl-rds-sg" {
 	name = "rancher-ctl-rds-sg"
 	description = "Security group for the rancher database"
-  	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
 
 	ingress {
 		from_port = 3306
@@ -213,7 +233,7 @@ resource "aws_security_group" "rancher-ctl-rds-sg" {
 resource "aws_security_group" "playground-rds-sg" {
 	name = "playground-rds-sg"
 	description = "Security group for the playground rds database"
-  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${aws_vpc.mybytesni.id}"
 
 	ingress {
 		from_port = 3306
@@ -275,6 +295,10 @@ output "playground-sg-id" {
 
 output "ssh-sg-id" {
   value = "${aws_security_group.ssh-sg.id}"
+}
+
+output "mybytesni-ssh-sg-id" {
+  value = "${aws_security_group.mybytesni-ssh-sg.id}"
 }
 
 output "blogextractor-sg-id" {
