@@ -15,6 +15,7 @@ variable "vpn-cidr" {}
 locals {
 	trusted-cidrs = [
 		"${var.home-cidr}",
-    "${var.office-cidr}"
+    "${var.office-cidr}",
+    "${var.vpn-cidr}"
 	]
 }
