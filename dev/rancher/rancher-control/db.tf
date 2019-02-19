@@ -1,3 +1,7 @@
+data "vault_generic_secret" "rancher-rds" {
+  path = "secret/rancher-rds"
+}
+
 resource "aws_db_instance" "rancher-ctl-rds" {
   identifier           = "rancher-ctl-rds"
   allocated_storage    = 20
@@ -8,9 +12,9 @@ resource "aws_db_instance" "rancher-ctl-rds" {
   engine_version       = "5.7"
   instance_class       = "db.t2.micro"
   vpc_security_group_ids = ["${data.terraform_remote_state.core.rancher-ctl-rds-sg-id}"]
-  name                 = "${var.rancher-ctl-rds-database}"
-  username             = "${var.rancher-ctl-rds-username}"
-  password             = "${var.rancher-ctl-rds-password}"
+  name                 =  "${data.vault_generic_secret.rancher-rds.data["database"]}",
+  username             =  "${data.vault_generic_secret.rancher-rds.data["username"]}",
+  password             =  "${data.vault_generic_secret.rancher-rds.data["password"]}"
 }
 
 resource "aws_route53_record" "rancher-ctl-rds-cname-record" {
