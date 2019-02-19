@@ -6,16 +6,10 @@ variable "domain" {
 	default = "mybytesni.com"
 }
 
-variable "home-cidr" {}
-
-variable "office-cidr" {}
-
-variable "vpn-cidr" {}
-
 locals {
 	trusted-cidrs = [
-		"${var.home-cidr}",
-    "${var.office-cidr}",
-    "${var.vpn-cidr}"
+    "${data.vault_generic_secret.cidr.data["home"]}",
+		"${data.vault_generic_secret.cidr.data["office"]}",
+    "${data.vault_generic_secret.cidr.data["vpn"]}"
 	]
 }

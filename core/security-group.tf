@@ -79,7 +79,7 @@ resource "aws_security_group" "ssh-sg" {
 		from_port = 22
 		to_port = 22
 		protocol = "tcp"
-		cidr_blocks = "${local.trusted-cidrs}"
+		cidr_blocks = ["${local.trusted-cidrs}"]
 		description = "Allow SSH connections from trusted cidrs"
 
 	}
@@ -98,7 +98,7 @@ resource "aws_security_group" "mybytesni-ssh-sg" {
 		from_port = 22
 		to_port = 22
 		protocol = "tcp"
-		cidr_blocks = "${local.trusted-cidrs}"
+		cidr_blocks = ["${local.trusted-cidrs}"]
     self = true
 		description = "Allow SSH connections from trusted cidrs"
 
@@ -257,7 +257,7 @@ resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 		from_port = 80
 		to_port = 80
 		protocol = "tcp"
-    cidr_blocks = "${local.trusted-cidrs}"
+    cidr_blocks = ["${local.trusted-cidrs}"]
 		description = "Allow HTTP connections on port 80 used for the UI"
 	}
 

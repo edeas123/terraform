@@ -72,3 +72,7 @@ data "aws_ami" "ubuntu-ami" {
 
   owners = ["099720109477"]
 }
+
+data "vault_generic_secret" "cidr" {
+  path = "secret/cidr"
+}

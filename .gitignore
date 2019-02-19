@@ -8,3 +8,4 @@
 todos.txt
 *.secrets.tf
 *secrets.*
+vault
