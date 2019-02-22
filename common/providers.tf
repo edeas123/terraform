@@ -7,4 +7,5 @@ provider "aws" {
 # configure the vault provider
 provider "vault" {
     version   = "1.5"
+    address   = "${var.vault_address}"
 }
