@@ -1,4 +1,15 @@
-# create a security group for the web servers
+data "vault_generic_secret" "cidr" {
+  path = "secret/cidr"
+}
+
+locals {
+	trusted-cidrs = [
+    "${data.vault_generic_secret.cidr.data["home"]}",
+		"${data.vault_generic_secret.cidr.data["office"]}",
+    "${data.vault_generic_secret.cidr.data["vpn"]}"
+	]
+}
+
 resource "aws_security_group" "web-sg" {
 	name = "web-sg"
 	description = "Security group for the web servers"
