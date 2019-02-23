@@ -19,7 +19,7 @@ resource "aws_iam_user_policy_attachment" "circleci-ecr-policy-attachment" {
 # create a policy document for the role
 # instead of using a policy document, it can used directly in
 # the role using terraform heredoc syntax
-data "aws_iam_policy_document" "s3access-role-policy" {
+data "aws_iam_policy_document" "ec2-access-policy" {
 	statement {
 		actions = ["sts:AssumeRole"]
 		principals {
@@ -33,7 +33,7 @@ data "aws_iam_policy_document" "s3access-role-policy" {
 resource "aws_iam_role" "s3access-role" {
 	name = "s3access-role"
 	description = "Allows EC2 instances to call AWS S3 service on your behalf."
- 	assume_role_policy = "${data.aws_iam_policy_document.s3access-role-policy.json}"
+ 	assume_role_policy = "${data.aws_iam_policy_document.ec2-access-policy.json}"
 }
 
 # attach a managed policy to the created role, for full access to s3
@@ -53,4 +53,26 @@ resource "aws_iam_instance_profile" "s3access-role" {
 
 output "s3access-role-iam-instance-profile-name" {
   value = "${aws_iam_instance_profile.s3access-role.name}"
+}
+
+# set an aws iam role with accompanying policy for ec2 
+resource "aws_iam_role" "jenkins-role" {
+	name = "jenkins-role"
+	description = "Allows jenkins EC2 instances to call AWS services on your behalf."
+ 	assume_role_policy = "${data.aws_iam_policy_document.ec2-access-policy.json}"
+}
+
+# attach a managed policy to the created role, for full access to s3
+resource "aws_iam_role_policy_attachment" "jenkins-policy-attachment" {
+  role      = "${aws_iam_role.jenkins-role.name}"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+}
+
+resource "aws_iam_instance_profile" "jenkins-role" {
+	name = "jenkins-role"
+	role = "${aws_iam_role.jenkins-role.name}"
+}
+
+output "jenkins-role-iam-instance-profile-name" {
+  value = "${aws_iam_instance_profile.jenkins-role.name}"
 }
