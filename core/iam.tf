@@ -65,7 +65,7 @@ resource "aws_iam_role" "jenkins-role" {
 # attach a managed policy to the created role, for full access to s3
 resource "aws_iam_role_policy_attachment" "jenkins-policy-attachment" {
   role      = "${aws_iam_role.jenkins-role.name}"
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2FullAccess"
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
 resource "aws_iam_instance_profile" "jenkins-role" {
