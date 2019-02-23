@@ -68,6 +68,20 @@ resource "aws_default_vpc" "default" {
   }
 }
 
+data "aws_subnet_ids" "vpc_subnets" {
+  vpc_id = "${aws_default_vpc.default.id}"
+}
+
+# not really necessary. keeping for knowledge purpose only
+data "aws_subnet" "vpc_subnet" {
+  count = "${length(data.aws_subnet_ids.vpc_subnets.ids)}"
+  id    = "${data.aws_subnet_ids.vpc_subnets.ids[count.index]}"
+}
+
+output "aws-subnet-ids" {
+  value = "${data.aws_subnet.vpc_subnet.*.id}"
+}
+
 output "default-vpc-id" {
   value = "${aws_default_vpc.default.id}"
 }

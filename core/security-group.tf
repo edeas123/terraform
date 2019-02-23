@@ -23,20 +23,20 @@ resource "aws_security_group" "web-sg" {
 		description = "Allow HTTP connections on port 80"
 	}
 
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-        description = "Allows all outbound traffic from the instance"
-    }
-    
-    tags {
-        Name = "web"
-    }
+  egress {
+      from_port = 0
+      to_port = 0
+      protocol = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+      description = "Allows all outbound traffic from the instance"
+  }
+  
+  tags {
+      Name = "web"
+  }
 }
 
-resource "aws_security_group" "playground-sg" {
+resource "aws_security_group" "mybytesni-playground-sg" {
 	name = "playground-sg"
 	description = "Security group for the playground instances"
   vpc_id = "${aws_vpc.mybytesni.id}"
@@ -49,9 +49,9 @@ resource "aws_security_group" "playground-sg" {
 		description = "Allows all outbound traffic from the instance"
 	}
 
-    tags {
-        Name = "playground"
-    }
+  tags {
+      Name = "playground"
+  }
 }
 
 # create a security group for the jenkins server
@@ -61,11 +61,11 @@ resource "aws_security_group" "jenkins-sg" {
   vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
-		from_port = 8080
-		to_port = 8080
+		from_port = 49000
+		to_port = 49000
 		protocol = "tcp"
-		cidr_blocks = ["0.0.0.0/0"]
-		description = "Allow HTTP connections on port 8080 used for the Jenkins UI"
+    cidr_blocks = ["${local.trusted-cidrs}"]
+		description = "Allow HTTP connections on port 49000 used for the Jenkins UI"
 	}
 
 	egress {
@@ -76,9 +76,9 @@ resource "aws_security_group" "jenkins-sg" {
 		description = "Allows all outbound traffic from the instance"
 	}
     
-    tags {
-        Name = "jenkins"
-    }
+  tags {
+      Name = "jenkins"
+  }
 }
 
 resource "aws_security_group" "ssh-sg" {
@@ -86,18 +86,18 @@ resource "aws_security_group" "ssh-sg" {
 	description = "Security group allowing ssh access from trusted cidrs"
   vpc_id = "${aws_default_vpc.default.id}"
 
-	ingress {
-		from_port = 22
-		to_port = 22
-		protocol = "tcp"
-		cidr_blocks = ["${local.trusted-cidrs}"]
-		description = "Allow SSH connections from trusted cidrs"
+  ingress {
+    from_port = 22
+    to_port = 22
+    protocol = "tcp"
+    cidr_blocks = ["${local.trusted-cidrs}"]
+    description = "Allow SSH connections from trusted cidrs"
 
-	}
+  }
     
-    tags {
-        Name = "ssh"
-    }
+  tags {
+      Name = "ssh"
+  }
 }
 
 resource "aws_security_group" "mybytesni-ssh-sg" {
@@ -115,15 +115,15 @@ resource "aws_security_group" "mybytesni-ssh-sg" {
 
 	}
     
-    tags {
-        Name = "mybytesni ssh"
-    }
+  tags {
+      Name = "mybytesni ssh"
+  }
 }
 
 resource "aws_security_group" "blogextractor-sg" {
 	name = "blogextractor-sg"
 	description = "Security group for the blogextractor instances"
-  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 80
@@ -141,16 +141,16 @@ resource "aws_security_group" "blogextractor-sg" {
 		description = "Allows all outbound traffic from the instance"
 	}
 
-    tags {
-        Name = "blogextractor"
-    }
+  tags {
+      Name = "blogextractor"
+  }
 }
 
 
 resource "aws_security_group" "rancher-container-host-sg" {
 	name = "rancher-container-host-sg"
 	description = "Security group for the rancher container host"
-  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 500
@@ -189,10 +189,28 @@ resource "aws_security_group" "rancher-container-host-sg" {
   }
 }
 
+resource "aws_security_group" "infra-sg" {
+	name = "infra-sg"
+	description = "Security group for all infra node"
+  vpc_id = "${aws_default_vpc.default.id}"
+
+	ingress {
+		from_port = 0
+		to_port = 0
+		protocol = "-1"
+		self = true
+		description = "Allow all communication within this group"
+	}
+
+  tags {
+      Name = "infra servers"
+  }
+}
+
 resource "aws_security_group" "rancher-ctl-host-sg" {
 	name = "rancher-ctl-host-sg"
 	description = "Security group for the rancher control host"
-  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 9345
@@ -226,7 +244,7 @@ resource "aws_security_group" "rancher-ctl-host-sg" {
 resource "aws_security_group" "rancher-ctl-rds-sg" {
 	name = "rancher-ctl-rds-sg"
 	description = "Security group for the rancher database"
-  vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 3306
@@ -241,7 +259,7 @@ resource "aws_security_group" "rancher-ctl-rds-sg" {
   }
 }
 
-resource "aws_security_group" "playground-rds-sg" {
+resource "aws_security_group" "mybytesni-playground-rds-sg" {
 	name = "playground-rds-sg"
 	description = "Security group for the playground rds database"
   vpc_id = "${aws_vpc.mybytesni.id}"
@@ -250,7 +268,7 @@ resource "aws_security_group" "playground-rds-sg" {
 		from_port = 3306
 		to_port = 3306
 		protocol = "tcp"
-    security_groups = ["${aws_security_group.playground-sg.id}"]
+    security_groups = ["${aws_security_group.mybytesni-playground-sg.id}"]
 		description = "Allow communication on the database port from only the playground-host"
 	}
 
@@ -262,7 +280,7 @@ resource "aws_security_group" "playground-rds-sg" {
 resource "aws_security_group" "rancher-ctl-host-alb-sg" {
 	name = "rancher-ctl-host-alb-sg"
 	description = "Security group for the rancher host alb"
-  	vpc_id = "${data.terraform_remote_state.core.default-vpc-id}"
+  vpc_id = "${aws_default_vpc.default.id}"
 
 	ingress {
 		from_port = 80
@@ -300,8 +318,8 @@ output "web-sg-id" {
   value = "${aws_security_group.web-sg.id}"
 }
 
-output "playground-sg-id" {
-  value = "${aws_security_group.playground-sg.id}"
+output "mybytesni-playground-sg-id" {
+  value = "${aws_security_group.mybytesni-playground-sg.id}"
 }
 
 output "ssh-sg-id" {
@@ -327,9 +345,13 @@ output "rancher-ctl-rds-sg-id" {
   value = "${aws_security_group.rancher-ctl-rds-sg.id}"
 }
 
-output "playground-rds-sg-id" {
-  value = "${aws_security_group.playground-rds-sg.id}"
+output "mybytesni-playground-rds-sg-id" {
+  value = "${aws_security_group.mybytesni-playground-rds-sg.id}"
 }
 output "rancher-ctl-host-alb-sg-id" {
   value = "${aws_security_group.rancher-ctl-host-alb-sg.id}"
+}
+
+output "infra-sg-id" {
+  value = "${aws_security_group.infra-sg.id}"
 }
