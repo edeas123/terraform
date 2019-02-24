@@ -6,7 +6,7 @@ resource "aws_spot_instance_request" "playground-spot-1" {
   subnet_id = "${data.terraform_remote_state.core.mybytesni-public-subnet-id}"
 	availability_zone = "${data.aws_availability_zones.zones.names[2]}"
 	vpc_security_group_ids = [
-		"${data.terraform_remote_state.core.playground-sg-id}",
+		"${data.terraform_remote_state.core.mybytesni-playground-sg-id}",
     "${data.terraform_remote_state.core.mybytesni-ssh-sg-id}"
 	]
 	wait_for_fulfillment = true
@@ -26,7 +26,7 @@ resource "aws_spot_instance_request" "playground-spot-2" {
   subnet_id = "${data.terraform_remote_state.core.mybytesni-private-subnet-id}"
 	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
 	vpc_security_group_ids = [
-		"${data.terraform_remote_state.core.playground-sg-id}"
+		"${data.terraform_remote_state.core.mybytesni-playground-sg-id}"
 	]
 	wait_for_fulfillment = true
 	timeouts {
