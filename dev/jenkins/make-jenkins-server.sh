@@ -1,23 +1,24 @@
 #!/bin/bash
 # provision the instance as a jenkins server
 
-# update the yum package management tool
-yum update -y
+# update the apt package management tool
+apt-get update -y
 
-# download the latest jenkins code package
-wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins.io/redhat/jenkins.repo
+# install docker
+apt-get install docker.io -y
 
-# import a key file from Jenkins-CI to enable installation from the package
-rpm --import https://pkg.jenkins.io/redhat/jenkins.io.key
+# install nfs4
+apt-get install nfs-common -y
 
-# remove java 1.7
-yum remove java-1.7.0 -y
+# make jenkins dir
+mkdir /var/jenkins_home
 
-# install java 8 required by jenkins
-yum install java-1.8.0 -y
+# mount efs volume
+mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport fs-19294860.efs.us-east-2.amazonaws.com:/ /var/jenkins_home
 
-# install jenkins
-yum install jenkins -y
-
-# start Jenkins as a service
-service jenkins start
+# run jenkins
+docker run -u root --rm \
+  -p 49000:8080 \
+  -v /var/jenkins_home:/var/jenkins_home \
+  -v /var/run/docker.sock:/var/run/docker.sock \
+  jenkinsci/blueocean

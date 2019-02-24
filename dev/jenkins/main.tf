@@ -1,23 +1,21 @@
-
-# TODO: attach a larger EBS volume
-# TODO: output this value /var/lib/jenkins/secrets/initialAdminPassword
-# provision the ec2 instance
-resource "aws_instance" "jenkins-server-1" {
-	ami	= "ami-0cd3dfa4e37921605"
-	instance_type = "t2.micro"
-	key_name 	  = "deployer"
-	availability_zone = "${data.aws_availability_zones.zones.names[0]}"
+resource "aws_spot_instance_request" "infra-host" {
+	ami	= "ami-0653e888ec96eab9b"
+	instance_type = "m4.large"
+	spot_type = "one-time"
+	key_name = "deployer"
 	vpc_security_group_ids = [
 		"${data.terraform_remote_state.core.jenkins-sg-id}",
-    "${data.terraform_remote_state.core.ssh-sg-id}"
+    "${data.terraform_remote_state.core.ssh-sg-id}",
 	]
-	tags = {
-		Name = "jenkins-server-1" 
+  iam_instance_profile = "${data.terraform_remote_state.core.jenkins-role-iam-instance-profile-name}"
+  subnet_id = "${data.terraform_remote_state.core.aws-subnet-ids[0]}"
+	wait_for_fulfillment = true
+	timeouts {
+		create = "3m"
 	}
-	user_data = "${file("make-jenkins-server.sh")}"
-}
-
-# output the instance public ip address
-output "jenkins-server-1-ip" {
-	value = "${aws_instance.jenkins-server-1.public_ip}"
+	tags {
+		Name = "Infra Host",
+    Running = "Jenkins, Vault, Consul"
+	}
+  user_data = "${base64encode(file("make-jenkins-server.sh"))}"
 }
