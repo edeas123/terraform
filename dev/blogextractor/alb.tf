@@ -4,8 +4,7 @@ resource "aws_alb" "blogextractor-alb" {
 	internal = false
 	load_balancer_type = "application"
 	ip_address_type  = "ipv4"
-
-	subnets = ["${data.aws_subnet_ids.vpc_subnets.ids}"]
+	subnets = ["${data.terraform_remote_state.core.aws-subnet-ids}"]
 	security_groups = [
     "${data.terraform_remote_state.core.blogextractor-sg-id}"
 	]
